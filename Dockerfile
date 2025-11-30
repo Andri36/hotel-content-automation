@@ -3,24 +3,21 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install all dependencies
-RUN npm install
-
-# Copy source code
+# Copy all source files
 COPY . .
 
-# Build both client (Vite) and server (esbuild)
-RUN npx tsx script/build.ts
+# Install dependencies
+RUN npm install
+
+# Build server only (frontend is deployed separately on Firebase)
+RUN npx tsx script/build-server.ts
 
 # Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package.json for reference
 COPY package*.json ./
 
 # Install only production dependencies

@@ -4,10 +4,18 @@ import path from "path";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
+  
+  // If client is not built (e.g., deployed separately on Firebase),
+  // just serve a simple message
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
-    );
+    console.log("[Express] Frontend deployed separately - skipping static file serving");
+    app.use("*", (_req, res) => {
+      res.status(200).json({
+        message: "Backend API is running",
+        note: "Frontend is deployed separately on Firebase",
+      });
+    });
+    return;
   }
 
   app.use(express.static(distPath));
