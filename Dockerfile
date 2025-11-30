@@ -12,8 +12,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build server only (skip Vite/client build)
-RUN npx tsx script/build-server.ts
+# Build both client (Vite) and server (esbuild)
+RUN npx tsx script/build.ts
 
 # Production stage
 FROM node:20-alpine
