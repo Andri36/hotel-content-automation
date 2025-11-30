@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: hotel-content-automation-backend
+    env: docker
+    region: singapore
+    plan: starter
+    
+    # Build configuration
+    dockerfilePath: ./Dockerfile
+    
+    # Environment variables (set these in Render dashboard)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+    
+    # Health check
+    healthCheckPath: /api/content/latest
+    healthCheckInterval: 300
+    
+    # Auto-deploy on push
+    autoDeploy: true
+
+  - type: web
+    name: hotel-content-automation-frontend
+    env: static
+    region: singapore
+    
+    # Static build
+    buildCommand: npm run build
+    staticPublishPath: ./dist/public
+    
+    # Environment variables for frontend
+    envVars:
+      - key: VITE_API_URL
+        value: https://hotel-content-automation-backend.onrender.com
