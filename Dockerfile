@@ -3,28 +3,30 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy all files first
-COPY . .
+# Copy package files
+COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies
 RUN npm install
 
-# Build the project (both client and server)
-# This runs script/build.ts which builds Vite + esbuild
-RUN npm run build
+# Copy source code
+COPY . .
+
+# Build server only (skip Vite/client build)
+RUN npx tsx script/build-server.ts
 
 # Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy only package files from source
+# Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
+# Install only production dependencies
 RUN npm install --production
 
-# Copy built files from builder
+# Copy built server from builder
 COPY --from=builder /app/dist ./dist
 
 # Expose port
